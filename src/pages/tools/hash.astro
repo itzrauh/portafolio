@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HashGenerator from "../../components/tools/HashGenerator.jsx";
+import { LuKeyRound } from "react-icons/lu";
+---
+
+<BaseLayout title="Hash Generator - itzrauh Tools" description="Genera hashes SHA1, SHA256 y SHA512 para texto o archivos.">
+  <main transition:name="main-content" class="pt-20 px-6 py-20">
+    <nav class="fixed top-0 left-0 right-0 z-50">
+      <div class="flex justify-between items-center p-6">
+        <div class="flex items-center gap-4">
+          <a href="/tools" class="flex items-center gap-2 text-neutral-400 hover:text-neutral-300 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Tools
+          </a>
+          <span class="text-neutral-600">/</span>
+          <span class="text-neutral-100 font-medium">Hash</span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="/" class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200">
+            Inicio
+          </a>
+          <a href="/tools" class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200">
+            Tools
+          </a>
+        </div>
+      </div>
+    </nav>
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <div class="flex items-center justify-center gap-3 mb-4">
+            <div class="p-3 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-700/20 border border-purple-500/30">
+              <LuKeyRound className="w-8 h-8 text-purple-400" />
+            </div>
+          </div>
+          <h1 class="text-4xl font-bold mb-4">
+            <span class="bg-gradient-to-r from-neutral-100 via-neutral-300 to-neutral-100 bg-clip-text text-transparent">
+              Hash Generator
+            </span>
+          </h1>
+          <div class="w-20 h-1 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full mx-auto no-cursor" />
+          <p class="text-neutral-400 mt-6 max-w-2xl mx-auto" style="padding-bottom: 2rem;">
+            Genera hashes SHA-1, SHA-256 y SHA-512 para texto o archivos de manera rápida y segura.
+          </p>
+        </div>
+
+        <HashGenerator client:load />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+          <div class="rounded-xl border border-neutral-800 bg-neutral-950/30 backdrop-blur-sm p-6">
+            <h4 class="text-lg font-semibold text-neutral-100 mb-3">¿Qué es un Hash?</h4>
+            <p class="text-neutral-400 text-sm leading-relaxed">
+              Un hash es una función que convierte datos de cualquier tamaño en una cadena de longitud fija.
+              Es útil para verificar integridad, almacenar contraseñas y firmas digitales.
+            </p>
+          </div>
+          
+          <div class="rounded-xl border border-neutral-800 bg-neutral-950/30 backdrop-blur-sm p-6">
+            <h4 class="text-lg font-semibold text-neutral-100 mb-3">Casos de Uso</h4>
+            <ul class="text-neutral-400 text-sm space-y-1">
+              <li>• Verificar integridad de archivos</li>
+              <li>• Generar checksums para archivos</li>
+              <li>• Almacenar contraseñas de forma segura</li>
+              <li>• Validar datos en sistemas distribuidos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+  </main>
+</BaseLayout>

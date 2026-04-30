@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ColorPaletteGenerator from "../../components/tools/ColorPaletteGenerator.jsx";
+import { LuPalette } from "react-icons/lu";
+---
+
+<BaseLayout title="Color Palette Generator - itzrauh Tools" description="Genera paletas de colores armoniosas para tus proyectos.">
+  <main transition:name="main-content" class="pt-20 px-6 py-20">
+    <nav class="fixed top-0 left-0 right-0 z-50">
+      <div class="flex justify-between items-center p-6">
+        <div class="flex items-center gap-4">
+          <a href="/tools" class="flex items-center gap-2 text-neutral-400 hover:text-neutral-300 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Tools
+          </a>
+          <span class="text-neutral-600">/</span>
+          <span class="text-neutral-100 font-medium">Palette</span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="/" class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200">
+            Inicio
+          </a>
+          <a href="/tools" class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200">
+            Tools
+          </a>
+        </div>
+      </div>
+    </nav>
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12">
+          <div class="flex items-center justify-center gap-3 mb-4">
+            <div class="p-3 rounded-lg bg-gradient-to-br from-pink-500/20 to-rose-600/20 border border-pink-500/30">
+              <LuPalette className="w-8 h-8 text-pink-400" />
+            </div>
+          </div>
+          <h1 class="text-4xl font-bold mb-4">
+            <span class="bg-gradient-to-r from-neutral-100 via-neutral-300 to-neutral-100 bg-clip-text text-transparent">
+              Color Palette Generator
+            </span>
+          </h1>
+          <div class="w-20 h-1 bg-gradient-to-r from-pink-500 to-rose-400 rounded-full mx-auto no-cursor" />
+          <p class="text-neutral-400 mt-6 max-w-2xl mx-auto" style="padding-bottom: 2rem;">
+            Genera paletas de colores armoniosas para tus proyectos. Elige un color base y selecciona el tipo de paleta.
+          </p>
+        </div>
+
+        <ColorPaletteGenerator client:load />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+          <div class="rounded-xl border border-neutral-800 bg-neutral-950/30 backdrop-blur-sm p-6">
+            <h4 class="text-lg font-semibold text-neutral-100 mb-3">Tipos de Paletas</h4>
+            <ul class="text-neutral-400 text-sm space-y-1">
+              <li>• <strong>Complementario</strong>: Colores opuestos</li>
+              <li>• <strong>Triádico</strong>: Tres colores equidistantes</li>
+              <li>• <strong>Análogo</strong>: Colores adyacentes</li>
+              <li>• <strong>Monocromático</strong>: Variaciones de un color</li>
+              <li>• <strong>Complementario Dividido</strong>: Base + 2 complementarios</li>
+            </ul>
+          </div>
+          
+          <div class="rounded-xl border border-neutral-800 bg-neutral-950/30 backdrop-blur-sm p-6">
+            <h4 class="text-lg font-semibold text-neutral-100 mb-3">Casos de Uso</h4>
+            <ul class="text-neutral-400 text-sm space-y-1">
+              <li>• Diseño de interfaces web</li>
+              <li>• Branding y identidad visual</li>
+              <li>• Ilustración digital</li>
+              <li>• Proyectos de diseño gráfico</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+  </main>
+</BaseLayout>

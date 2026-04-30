@@ -1,0 +1,17 @@
+.notransform {
+  transform: translateY(4px);
+}
+
+* {
+  user-select: text;
+  caret-color: transparent;
+}
+
+.games {
+  transform: translateY(2px);
+  user-select: none;
+}
+
+img {
+  user-select: none;
+}

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Base64Converter from "../../components/tools/Base64Converter.jsx";
+---
+
+<BaseLayout title="Base64 Encoder/Decoder - itzrauh Tools" description="Codifica y decodifica texto en Base64 de manera rápida y sencilla. Perfecto para desarrollo y debugging.">
+  <main transition:name="main-content" class="pt-20 px-6 py-20">
+    <nav class="fixed top-0 left-0 right-0 z-50">
+      <div class="flex justify-between items-center p-6">
+        <div class="flex items-center gap-4">
+          <a href="/tools" class="flex items-center gap-2 text-neutral-400 hover:text-neutral-300 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Tools
+          </a>
+          <span class="text-neutral-600">/</span>
+          <span class="text-neutral-100 font-medium">Base64</span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="/" class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200">
+            Inicio
+          </a>
+          <a href="/tools" class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200">
+            Tools
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <Base64Converter client:load />
+  </main>
+</BaseLayout>

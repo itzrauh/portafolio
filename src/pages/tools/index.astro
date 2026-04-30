@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Tools from '../../components/Tools.jsx';
+import Footer from '../../components/Footer.jsx';
+---
+
+<BaseLayout title="Tools - itzrauh" description="idk">
+  <main transition:name="main-content">
+    <nav class="fixed top-0 left-0 right-0 z-50">
+      <div class="flex justify-end items-center p-6">
+        <div class="flex items-center gap-4">
+          <a
+            href="/"
+            class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200"
+          >
+            Inicio
+          </a>
+          <a href="/tools" class="text-neutral-100 font-medium"> Tools </a>
+        </div>
+      </div>
+    </nav>
+
+    <Tools client:idle />
+    <Footer />
+  </main>
+</BaseLayout>

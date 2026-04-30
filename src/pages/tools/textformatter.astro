@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TextFormatter from "../../components/tools/TextFormatter.jsx";
+import { IoDocumentTextOutline } from "react-icons/io5";
+---
+
+<BaseLayout title="Text Formatter - itzrauh Tools" description="Formatea texto: mayúsculas, minúsculas, capitalizado, small caps y más.">
+  <main transition:name="main-content" class="pt-20 px-6 py-20">
+    <nav class="fixed top-0 left-0 right-0 z-50">
+      <div class="flex justify-between items-center p-6">
+        <div class="flex items-center gap-4">
+          <a href="/tools" class="flex items-center gap-2 text-neutral-400 hover:text-neutral-300 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Tools
+          </a>
+          <span class="text-neutral-600">/</span>
+          <span class="text-neutral-100 font-medium">Formatter</span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="/" class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200">
+            Inicio
+          </a>
+          <a href="/tools" class="text-neutral-400 hover:text-neutral-300 transition-colors duration-200">
+            Tools
+          </a>
+        </div>
+      </div>
+    </nav>
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center">
+          <div class="flex items-center justify-center gap-3 mb-2">
+            <div class="p-3 rounded-lg bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30">
+              <IoDocumentTextOutline className="w-10 h-10 text-green-400" />
+            </div>
+          </div>
+          <h1 class="text-4xl font-bold mb-4">
+            <span class="bg-gradient-to-r from-neutral-100 via-neutral-300 to-neutral-100 bg-clip-text text-transparent">
+              Text Formatter
+            </span>
+          </h1>
+          <div class="w-20 h-1 bg-gradient-to-r from-green-500 to-green-400 rounded-full mx-auto no-cursor" />
+        </div>
+
+        <TextFormatter client:load />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+          <div class="rounded-xl border border-neutral-800 bg-neutral-950/30 backdrop-blur-sm p-6">
+            <h4 class="text-lg font-semibold text-neutral-100 mb-3">¿Qué es un Text Formatter?</h4>
+            <p class="text-neutral-400 text-sm leading-relaxed">
+              Un Text Formatter te permite transformar texto en diferentes estilos rápidamente.
+              Puedes usarlo para títulos, mensajes destacados, o simplemente divertirte con fuentes Unicode.
+            </p>
+          </div>
+          
+          <div class="rounded-xl border border-neutral-800 bg-neutral-950/30 backdrop-blur-sm p-6">
+            <h4 class="text-lg font-semibold text-neutral-100 mb-3">Casos de Uso</h4>
+            <ul class="text-neutral-400 text-sm space-y-1">
+              <li>• Crear títulos en mayúsculas</li>
+              <li>• Transformar texto a minúsculas para normalizar</li>
+              <li>• Aplicar estilos fancy como ʜᴏʟᴀ</li>
+              <li>• Preparar texto para diseño gráfico o redes sociales</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+  </main>
+</BaseLayout>
