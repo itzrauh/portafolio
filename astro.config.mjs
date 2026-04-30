@@ -9,7 +9,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   integrations: [react()],
   output: "server",
-  adapter: vercel(),
+  adapter: vercel({
+    webAnalytics: { enabled: true }
+  }),
 
   vite: {
     plugins: [tailwindcss()],
