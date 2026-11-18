@@ -1,7 +1,77 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoLogoTwitter } from "react-icons/io";
 import { IoIosSend } from "react-icons/io";
 import { IoLogoInstagram } from "react-icons/io5";
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+
+const loadTurnstile = () =>
+  new Promise((resolve) => {
+    if (window.turnstile) {
+      resolve(window.turnstile);
+      return;
+    }
+
+    const existing = document.querySelector("script[data-turnstile]");
+    if (existing) {
+      existing.addEventListener("load", () => resolve(window.turnstile));
+      existing.addEventListener("error", () => resolve(null));
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src =
+      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.dataset.turnstile = "true";
+    script.onload = () => resolve(window.turnstile);
+    script.onerror = () => resolve(null);
+    document.head.appendChild(script);
+  });
+
+const getBrowserMetadata = () => {
+  if (typeof window === "undefined") return null;
+  const { navigator: nav, screen, location, document: doc } = window;
+
+  return {
+    userAgent: nav.userAgent || null,
+    language: nav.language || null,
+    languages: Array.isArray(nav.languages) ? nav.languages.slice(0, 5) : [],
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+    timezoneOffset: new Date().getTimezoneOffset(),
+    platform: nav.platform || null,
+    screen: screen ? `${screen.width}x${screen.height}@${screen.colorDepth}` : null,
+    referrer: doc.referrer || null,
+    path: location.pathname || null,
+  };
+};
+
+const getGrantedGeolocation = async () => {
+  if (typeof navigator === "undefined" || !navigator.geolocation) return null;
+
+  try {
+    if (navigator.permissions?.query) {
+      const status = await navigator.permissions.query({ name: "geolocation" });
+      if (status.state !== "granted") return null;
+    }
+
+    return await new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) =>
+          resolve({
+            lat: Number(coords.latitude.toFixed(3)),
+            lon: Number(coords.longitude.toFixed(3)),
+            accuracy: Math.round(coords.accuracy),
+          }),
+        () => resolve(null),
+        { maximumAge: 600000, timeout: 3000 }
+      );
+    });
+  } catch {
+    return null;
+  }
+};
 
 function Contacto() {
   const [copiedDiscord, setCopiedDiscord] = useState(false);
@@ -10,9 +80,63 @@ function Contacto() {
     email: "",
     asunto: "",
     mensaje: "",
+    website: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const formStartedAtRef = useRef(Date.now());
+  const geoRef = useRef(null);
+  const turnstileContainerRef = useRef(null);
+  const turnstileTokenRef = useRef(null);
+  const turnstileWidgetRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    getGrantedGeolocation().then((geo) => {
+      if (active) geoRef.current = geo;
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !turnstileContainerRef.current) return;
+
+    let active = true;
+    loadTurnstile().then((turnstile) => {
+      if (!active || !turnstile || !turnstileContainerRef.current) return;
+      turnstileWidgetRef.current = turnstile.render(turnstileContainerRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: "dark",
+        size: "flexible",
+        callback: (token) => {
+          turnstileTokenRef.current = token;
+        },
+        "expired-callback": () => {
+          turnstileTokenRef.current = null;
+        },
+        "error-callback": () => {
+          turnstileTokenRef.current = null;
+        },
+      });
+    });
+
+    return () => {
+      active = false;
+      if (window.turnstile && turnstileWidgetRef.current !== null) {
+        window.turnstile.remove(turnstileWidgetRef.current);
+        turnstileWidgetRef.current = null;
+      }
+    };
+  }, []);
+
+  const resetTurnstile = () => {
+    turnstileTokenRef.current = null;
+    if (window.turnstile && turnstileWidgetRef.current !== null) {
+      window.turnstile.reset(turnstileWidgetRef.current);
+    }
+  };
 
   const redesSociales = [
     {
@@ -141,6 +265,11 @@ function Contacto() {
       return;
     }
 
+    if (TURNSTILE_SITE_KEY && !turnstileTokenRef.current) {
+      setSubmitStatus("captcha");
+      return;
+    }
+
     setIsLoading(true);
     setSubmitStatus(null);
 
@@ -150,7 +279,15 @@ function Contacto() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          captchaToken: turnstileTokenRef.current,
+          meta: {
+            ...getBrowserMetadata(),
+            geo: geoRef.current,
+            elapsedMs: Date.now() - formStartedAtRef.current,
+          },
+        }),
       });
 
       // ivo intenta tirar esto pedazo de hijo de la gran puta
@@ -164,13 +301,19 @@ function Contacto() {
           email: "",
           asunto: "",
           mensaje: "",
+          website: "",
         });
+        formStartedAtRef.current = Date.now();
+        resetTurnstile();
       } else {
         if (response.status === 429) {
           setSubmitStatus("rate-limited");
+        } else if (typeof data.error === "string" && /captcha|anti-bots/i.test(data.error)) {
+          setSubmitStatus("captcha");
         } else {
           setSubmitStatus("error");
         }
+        resetTurnstile();
         console.error("Error:", data.error || "Error al enviar mensaje");
       }
     } catch (error) {
@@ -347,6 +490,12 @@ function Contacto() {
                 </div>
               )}
 
+              {submitStatus === "captcha" && (
+                <div className="mb-6 p-4 rounded-lg bg-yellow-900/20 border border-yellow-500/20 text-yellow-400">
+                  🤖 Completa la verificación anti-bots antes de enviar.
+                </div>
+              )}
+
               {submitStatus === "error" && (
                 <div className="mb-6 p-4 rounded-lg bg-red-900/20 border border-red-500/20 text-red-400">
                   ❌ Error al enviar el mensaje. Por favor, inténtalo de nuevo.
@@ -415,6 +564,38 @@ function Contacto() {
                     required
                     className="yescursor w-full px-4 py-3 rounded-lg border border-neutral-700 bg-neutral-900/50 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600 focus:border-transparent transition-all duration-200 resize-none"
                     placeholder="Cuéntame sobre tu proyecto..."
+                  />
+                </div>
+
+                {TURNSTILE_SITE_KEY && (
+                  <div className="w-full overflow-hidden rounded-lg">
+                    <div
+                      ref={turnstileContainerRef}
+                      className="cf-turnstile"
+                      data-sitekey={TURNSTILE_SITE_KEY}
+                    />
+                  </div>
+                )}
+
+                <div
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    left: "-9999px",
+                    width: 0,
+                    height: 0,
+                    overflow: "hidden",
+                  }}
+                >
+                  <label htmlFor="contact-website">¿Web?</label>
+                  <input
+                    id="contact-website"
+                    type="text"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleInputChange}
+                    tabIndex={-1}
+                    autoComplete="off"
                   />
                 </div>
 
